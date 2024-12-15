@@ -6,28 +6,26 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-const CellSize = 30
+const (
+	CellSize   = 30
+	DrawOffset = 10
+)
 
 func main() {
-	rl.InitWindow(301, 601, "raylib Tetris")
+	rl.InitWindow(501, 621, "raylib Tetris")
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(60)
 	game := NewGame()
 	ticker := time.NewTicker(500 * time.Millisecond)
-	// go func() {
-	// 	for range ticker.C {
-	// 		game.MoveBlockDown()
-	// 	}
-	// }()
 	for !rl.WindowShouldClose() {
 		select {
-		case _ = <-ticker.C:
+		case <-ticker.C:
 			game.MoveBlockDown()
 		default:
 			game.HandleInput()
 			rl.BeginDrawing()
-			rl.ClearBackground(rl.Black)
+			rl.ClearBackground(rl.DarkBlue)
 			game.Draw()
 			rl.EndDrawing()
 

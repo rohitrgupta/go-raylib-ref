@@ -12,11 +12,6 @@ type Block struct {
 	colorId  int
 }
 
-// func (b *Block) Move(drow, dcol int) {
-// 	b.row += drow
-// 	b.col += dcol
-// }
-
 func (b *Block) MoveLeft() {
 	b.col--
 }
@@ -46,14 +41,14 @@ func (b *Block) GetCellPositions() [][]int {
 	return cellPositions
 }
 
-func (b *Block) Draw() {
+func (b *Block) Draw(offsetX, offsetY int) {
 	colors := AllColors()
 	for _, cell := range b.cells[b.rotation] {
 		cellRow := cell[0]
 		cellCol := cell[1]
 		rl.DrawRectangle(
-			int32((cellCol+b.col)*CellSize+1),
-			int32((cellRow+b.row)*CellSize+1),
+			int32((cellCol+b.col)*CellSize+1+offsetX),
+			int32((cellRow+b.row)*CellSize+1+offsetY),
 			int32(CellSize-1),
 			int32(CellSize-1),
 			colors[b.colorId])

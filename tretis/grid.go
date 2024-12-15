@@ -8,7 +8,6 @@ func AllColors() []rl.Color {
 	return []rl.Color{
 		rl.DarkGray,
 		rl.Red,
-		rl.Blue,
 		rl.Green,
 		rl.Yellow,
 		rl.Purple,
@@ -33,6 +32,13 @@ func NewGrid() *Grid {
 		colors:  AllColors(),
 	}
 }
+func (g *Grid) Clear() {
+	for row := 0; row < g.numRows; row++ {
+		for col := 0; col < g.numCols; col++ {
+			g.grid[row][col] = 0
+		}
+	}
+}
 
 func (g *Grid) GetCellColor(row, col int) rl.Color {
 	color := g.grid[row][col]
@@ -47,8 +53,8 @@ func (g *Grid) Draw() {
 		for col := 0; col < g.numCols; col++ {
 			cellColor := g.GetCellColor(row, col)
 			rl.DrawRectangle(
-				int32(col*CellSize+1),
-				int32(row*CellSize+1),
+				int32(col*CellSize+1+DrawOffset),
+				int32(row*CellSize+1+DrawOffset),
 				int32(CellSize-1),
 				int32(CellSize-1),
 				cellColor)
@@ -70,10 +76,12 @@ func (g *Grid) IsCellFIlled(cell []int) bool {
 	return g.grid[cell[0]][cell[1]] != 0
 }
 
-func (g *Grid) ClearCompleted() {
+func (g *Grid) ClearCompleted() int {
+	cleared := 0
 	for row := 0; row < g.numRows; row++ {
 		completed := g.isCompleted(row)
 		if completed {
+			cleared += 1
 			g.clearRow(row)
 			for i := row; i > 0; i-- {
 				for col := 0; col < g.numCols; col++ {
@@ -82,6 +90,7 @@ func (g *Grid) ClearCompleted() {
 			}
 		}
 	}
+	return cleared
 }
 
 func (g *Grid) isCompleted(row int) bool {
