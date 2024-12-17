@@ -4,6 +4,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+// AllColors returns a list of all the colors used in the game.
 func AllColors() []rl.Color {
 	return []rl.Color{
 		rl.DarkGray,
@@ -62,6 +63,7 @@ func (g *Grid) Draw() {
 	}
 }
 
+// IsCellOutside returns true if the given cell is outside the grid.
 func (g *Grid) IsCellOutside(cell []int) bool {
 	if cell[1] < 0 || cell[1] >= g.numCols {
 		return true
@@ -72,10 +74,12 @@ func (g *Grid) IsCellOutside(cell []int) bool {
 	return false
 }
 
+// IsCellEmpty returns true if the given cell is empty.
 func (g *Grid) IsCellFIlled(cell []int) bool {
 	return g.grid[cell[0]][cell[1]] != 0
 }
 
+// ClearCompleted clears all completed rows and returns the number of rows cleared.
 func (g *Grid) ClearCompleted() int {
 	cleared := 0
 	for row := 0; row < g.numRows; row++ {
@@ -83,16 +87,22 @@ func (g *Grid) ClearCompleted() int {
 		if completed {
 			cleared += 1
 			g.clearRow(row)
-			for i := row; i > 0; i-- {
-				for col := 0; col < g.numCols; col++ {
-					g.grid[i][col] = g.grid[i-1][col]
-				}
-			}
+			g.dropRowsDown(row)
 		}
 	}
 	return cleared
 }
 
+// move upper rows down (called after a row is cleared)
+func (g *Grid) dropRowsDown(row int) {
+	for i := row; i > 0; i-- {
+		for col := 0; col < g.numCols; col++ {
+			g.grid[i][col] = g.grid[i-1][col]
+		}
+	}
+}
+
+// isCompleted returns true if the given row is completed.
 func (g *Grid) isCompleted(row int) bool {
 	completed := true
 	for col := 0; col < g.numCols; col++ {
