@@ -14,11 +14,14 @@ const (
 func main() {
 	rl.InitWindow(501, 621, "raylib Tetris")
 	defer rl.CloseWindow()
+	rl.InitAudioDevice()
+	defer rl.CloseAudioDevice()
 
 	rl.SetTargetFPS(60)
 	game := NewGame()
 	ticker := time.NewTicker(500 * time.Millisecond)
 	for !rl.WindowShouldClose() {
+		rl.UpdateMusicStream(game.Music)
 		select {
 		case <-ticker.C:
 			game.MoveBlockDown()

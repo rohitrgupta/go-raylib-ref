@@ -8,12 +8,15 @@ import (
 )
 
 type Game struct {
-	grid      *Grid
-	block     *Block
-	nextBlock *Block
-	blocks    []func() *Block
-	GameOver  bool
-	Score     int
+	grid        *Grid
+	block       *Block
+	nextBlock   *Block
+	blocks      []func() *Block
+	GameOver    bool
+	Score       int
+	Music       rl.Music
+	rotateSound rl.Sound
+	clearSound  rl.Sound
 }
 
 func NewGame() *Game {
@@ -31,7 +34,17 @@ func NewGame() *Game {
 		},
 	}
 	g.SpawnBlock()
+	g.Music = rl.LoadMusicStream("assets/music.mp3")
+	g.rotateSound = rl.LoadSound("assets/rotate.mp3")
+	g.clearSound = rl.LoadSound("assets/clear.mp3")
+	rl.PlayMusicStream(g.Music)
 	return g
+}
+
+func (g *Game) End() {
+	rl.UnloadMusicStream(g.Music)
+	rl.UnloadSound(g.rotateSound)
+	rl.UnloadSound(g.clearSound)
 }
 
 func (g *Game) Draw() {
@@ -140,7 +153,10 @@ func (g *Game) MoveBlockDown() bool {
 		g.block.MoveUp()
 		g.LockBlock()
 		cleared := g.grid.ClearCompleted()
-		g.UpdateScore(cleared, 0)
+		if cleared > 0 {
+			rl.PlaySound(g.clearSound)
+			g.UpdateScore(cleared, 0)
+		}
 		g.SpawnBlock()
 		if !g.doesBlockFits() {
 			g.GameOver = true
@@ -155,6 +171,7 @@ func (g *Game) RotateBlock() {
 	if !g.doesBlockFits() {
 		g.block.Rotate(false)
 	}
+	rl.PlaySound(g.rotateSound)
 }
 
 func (g *Game) LockBlock() {
